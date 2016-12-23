@@ -1,0 +1,35 @@
+---
+title: "Walmart Stock"
+author: "Saurabh Arora"
+date: "12/23/2016"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Ploting with Plotly
+
+In this presentation, we would plot with plotly. The sample data set is the historical price of walmart stock. The dataset is obtained from Yahoo finance.
+
+```{r message=FALSE,warning=FALSE} 
+library(plotly)
+library(forecast)
+```
+
+##Walmart Stock
+
+```{r echo=FALSE,message=FALSE}
+library(plotly)
+df <- read.csv("./stock.csv")
+stockdate <- as.Date(df[,1],"%m/%d/%Y")
+mva <- ma(df$Close,order=5)
+plot_ly(x=stockdate,y=df$Close) %>% add_trace(x=stockdate,y=mva,mode='lines') %>% 
+  layout(title="Walmart Stock Price",xaxis=list(title="Year",showgrid=TRUE),yaxis=list(title="Price in USD",showgrid=TRUE))
+```
+
+## Reference
+
+The data for this plot was obtained from Yahoo finance https://finance.yahoo.com/quote/WMT/history?ltr=1.
+
