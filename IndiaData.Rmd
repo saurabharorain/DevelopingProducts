@@ -1,0 +1,58 @@
+---
+title: "India Population and GDP Data"
+author: "Saurabh Arora"
+date: "1/1/2017"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Introduction
+This document intends to talk about the Shiny Application as hosted in https://saurabharorain.shinyapps.io/datamagic/ .
+
+
+Lets us now load and normalize the Population and GDP data for India.
+```{r,echo=TRUE,warning=FALSE,error=FALSE,message=FALSE}
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+population <- read.csv("./indiapopulation.csv",header=TRUE);
+population$popmil <- round(population$population/1000000)
+population$normalizedPopulation <- (population$population-mean(population$population))/sd(population$population)
+gdp <- read.csv("./indiagdp.csv",header=TRUE);
+gdp$gdpmil <- round(gdp$gdp/1000000)
+gdp$normalizedGDP <- (gdp$gdp-mean(gdp$gdp))/sd(gdp$gdp)
+mergeddata <- merge(population,gdp)
+```
+
+## India Population and GDP Growth.
+The population growth in india has been linear over the years, but not gdp.The same is shown in the plot below.
+```{r,echo=TRUE,fig.height=3}
+finaldata <- mergeddata %>% select(year,normalizedPopulation,normalizedGDP)
+plotdata <- melt(finaldata,c("year"))
+ggplot(plotdata,aes(x=year,y=value,colour=variable))+geom_line()+
+   xlab("Year") + ylab("Normalized values")
+```
+
+## GDP to Population Ratio
+Once we have looked at GDP and population growth, lets look at the important aspect GDP per person. This is an important measure of the growth of the country. The ratio is calculated as below.
+```{r, echo=TRUE,fig.height=3}
+mergeddata$ratio <- round(mergeddata$gdp/mergeddata$population)
+```
+
+The command for plotting the same is as below, and plot on next page.
+
+```{r,echo=TRUE}
+ratiograph <- ggplot(mergeddata,aes(x=ratio,y=year)) + geom_point() + 
+  xlab("GDP per Population (in USD)") + ylab("Year")
+```
+## Ratio Plot and Conclusion
+```{r,fig.height=3}
+ratiograph
+```
+Based on the Ratio plot, we can conclude the following
+
+- The GDP per population has improved over the years.
+- After year 2000, the growth in GDP is very high. It has grown from 400 to $1600 in last 15 years.
